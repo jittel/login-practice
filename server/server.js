@@ -1,8 +1,24 @@
-const express = require('express')
-const app = express()
+const express = require('express');
+const routes = require('./routes');
+// import sequelize connection
+const sequelize = require('./config/connection');
 
-app.get("/api", (req, res) => {
-    res.json({"users": ["userOne", "userTwo", "userthree"]})
-})
 
-app.listen(5000, () => { console.log("server going on 5000")})
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+// const { User, Chicken } = require('./models')
+
+var cors = require('cors')
+
+app.use(cors()) // Use this after the variable declaration
+
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+app.use(routes);
+
+// sync sequelize models to the database, then turn on the server
+sequelize.sync({ force: false }).then(() => {
+    app.listen(PORT, () => console.log(`Now listening on ${PORT} 🚀`));
+});
